@@ -6,11 +6,11 @@
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
 ;; Maintainer: Tassilo Horn <tsdh@gnu.org>
-;; Version: 2.0.1
+;; Version: 2.0.2
 ;; Keywords: faces, matching
 ;; URL: https://sr.ht/~tsdh/highlight-parentheses.el/
-;; Package-Requires: ((emacs "24.3") (cl-lib "0.6.1"))
-;; Compatibility: GNU Emacs 24.3, GNU Emacs 25.x, GNU Emacs 26.x, Emacs 27.x
+;; Package-Requires: ((emacs "24.3"))
+;; Compatibility: GNU Emacs 24.3, 25.x, 26.x, 27.x
 ;;
 ;; This file is NOT part of GNU Emacs.
 ;;
@@ -44,6 +44,10 @@
 ;; If you set them from Lisp rather than through the customize interface, you
 ;; may have to call `highlight-parentheses--color-update' in order to have the
 ;; changes affect already opened buffers.
+;;
+;; You can also customize the `highlight-parentheses-highlight' face which acts
+;; as a blanket face on top of which the colors and attributes defined by the
+;; three customize options listed above are applied.
 
 ;;; Code:
 

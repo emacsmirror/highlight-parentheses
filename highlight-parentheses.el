@@ -8,8 +8,7 @@
 ;; Maintainer: Tassilo Horn <tsdh@gnu.org>
 ;; Version: 2.0.0
 ;; Keywords: faces, matching
-;; URL: https://github.com/tsdh/highlight-parentheses.el
-;;      http://nschum.de/src/emacs/highlight-parentheses/ (old website)
+;; URL: https://sr.ht/~tsdh/highlight-parentheses.el/
 ;; Package-Requires: ((emacs "24.3") (cl-lib "0.6.1"))
 ;; Compatibility: GNU Emacs 24.3, GNU Emacs 25.x, GNU Emacs 26.x, Emacs 27.x
 ;;

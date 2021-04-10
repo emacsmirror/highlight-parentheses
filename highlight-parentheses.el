@@ -1,7 +1,8 @@
-;;; highlight-parentheses.el --- Highlight surrounding parentheses
+;;; highlight-parentheses.el --- Highlight surrounding parentheses  -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2007, 2009, 2013 Nikolaj Schumacher
 ;; Copyright (C) 2018 Tim Perkins
+;; Copyright (C) 2018-2021 Tassilo Horn
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
 ;; Maintainer: Tassilo Horn <tsdh@gnu.org>
@@ -32,15 +33,25 @@
 ;; Add the following to your .emacs file:
 ;; (require 'highlight-parentheses)
 ;;
-;; Enable the mode using M-x highlight-parentheses-mode or by adding it to a
-;; hook.
+;; Enable the mode using `M-x highlight-parentheses-mode' or by adding it to a
+;; hook such as `prog-mode-hook'.
 ;;
+;; The look of the highlighted parens can be customized using these options:
+;;
+;; - `highlight-parentheses-colors'
+;; - `highlight-parentheses-background-colors'
+;; - `highlight-parentheses-attributes'
+;;
+;; If you set them from Lisp rather than through the customize interface, you
+;; may have to call `highlight-parentheses--color-update' in order to have the
+;; changes affect already opened buffers.
+
 ;;; Code:
 
 (require 'cl-lib)
 
 (defgroup highlight-parentheses nil
-  "Highlight surrounding parentheses"
+  "Highlight surrounding parentheses."
   :group 'faces
   :group 'matching)
 
@@ -56,18 +67,17 @@ This function is used so that appropriate custom variables apply
 immediately once set (through the custom interface)."
   (set variable value)
   ;; REVIEW: I assume this check is here for cases that are too early into the
-  ;; load process?
+  ;; load process? Exactly! ;-)
   (when (fboundp 'highlight-parentheses--color-update)
     (highlight-parentheses--color-update)))
 
-;; TODO: There should probably be more documentation on how this variable works
-;; as a function.  Same for the others.
 (define-obsolete-variable-alias 'hl-paren-colors
   'highlight-parentheses-colors "2.0.0")
 (defcustom highlight-parentheses-colors
   '("firebrick1" "IndianRed1" "IndianRed3" "IndianRed4")
   "List of colors for the highlighted parentheses.
-The list starts with the inside parentheses and moves outwards."
+The list starts with the inside parentheses and moves outwards.
+May also be a function returning a list of colors."
   :type '(choice (repeat color) function)
   :set #'highlight-parentheses--set
   :group 'highlight-parentheses)
@@ -76,7 +86,8 @@ The list starts with the inside parentheses and moves outwards."
   'highlight-parentheses-background-colors "2.0.0")
 (defcustom highlight-parentheses-background-colors nil
   "List of colors for the background highlighted parentheses.
-The list starts with the inside parentheses and moves outwards."
+The list starts with the inside parentheses and moves outwards.
+May also be a function returning a list of colors."
   :type '(choice (repeat color) function)
   :set #'highlight-parentheses--set
   :group 'highlight-parentheses)
@@ -85,8 +96,10 @@ The list starts with the inside parentheses and moves outwards."
   'highlight-parentheses-attributes "2.0.0")
 (defcustom highlight-parentheses-attributes nil
   "List of face attributes for the highlighted parentheses.
-The list starts with the inside parentheses and moves outwards."
-  :type '(choice plist function)
+Each element is a plist of face attributes.
+The list starts with the inside parentheses and moves outwards.
+May also be a function returning a list of plists."
+  :type '(choice (repeat plist) function)
   :set #'highlight-parentheses--set
   :group 'highlight-parentheses)
 
@@ -233,8 +246,8 @@ overlays in it instead."
             (car-bg (car bg))
             (car-attr (car attr)))
         (cl-loop for (key . (val . _rest)) on car-attr by #'cddr
-              do (setq attributes
-                       (plist-put attributes key val)))
+                 do (setq attributes
+                          (plist-put attributes key val)))
         (when car-fg
           (setq attributes (plist-put attributes :foreground car-fg)))
         (when car-bg
@@ -242,7 +255,7 @@ overlays in it instead."
       (pop fg)
       (pop bg)
       (pop attr)
-      (dotimes (i 2) ;; front and back
+      (dotimes (_i 2) ;; front and back
         (push (make-overlay 0 0 nil t) highlight-parentheses--overlays)
         (overlay-put (car highlight-parentheses--overlays) 'font-lock-face attributes)))
     (setq highlight-parentheses--overlays (nreverse highlight-parentheses--overlays))))

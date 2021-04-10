@@ -256,6 +256,9 @@ overlays in it instead."
       (pop attr)
       (dotimes (_i 2) ;; front and back
         (push (make-overlay 0 0 nil t) highlight-parentheses--overlays)
+        ;; Add a 'highlight-parentheses property just that we can easily
+        ;; identify "our" overlay with `C-u C-x =' and friends.
+        (overlay-put (car highlight-parentheses--overlays) 'highlight-parentheses t)
         (overlay-put (car highlight-parentheses--overlays) 'font-lock-face attributes)))
     (setq highlight-parentheses--overlays (nreverse highlight-parentheses--overlays))))
 

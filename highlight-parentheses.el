@@ -6,7 +6,7 @@
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
 ;; Maintainer: Tassilo Horn <tsdh@gnu.org>
-;; Version: 2.0.2
+;; Version: 2.0.3
 ;; Keywords: faces, matching
 ;; URL: https://sr.ht/~tsdh/highlight-parentheses.el/
 ;; Package-Requires: ((emacs "24.3"))
@@ -199,8 +199,7 @@ overlays in it instead."
 ;;;###autoload
 (define-minor-mode highlight-parentheses-mode
   "Minor mode to highlight the surrounding parentheses."
-  ;; REVIEW: Given the minor mode has no menu, we could also remove the lighter.
-  nil " hl-p" nil
+  :lighter " hl-p"
   (highlight-parentheses--delete-overlays)
   (kill-local-variable 'highlight-parentheses--overlays)
   (kill-local-variable 'highlight-parentheses--last-point)

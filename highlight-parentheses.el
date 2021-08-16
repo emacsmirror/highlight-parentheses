@@ -242,6 +242,11 @@ overlays in it instead."
                   (funcall highlight-parentheses-attributes)
                 highlight-parentheses-attributes))
         attributes)
+    ;; If no colors, bg-colors, or attrs are set, then only the effect of
+    ;; highlight-parentheses-highlight should be applied.  In that case, fontify
+    ;; up to 8 nesting levels with the specification of that face.
+    (when (and (null fg) (null bg) (null attr))
+      (setq fg (make-list 8 nil)))
     (while (or fg bg attr)
       (setq attributes (face-attr-construct 'highlight-parentheses-highlight))
       (let ((car-fg (car fg))

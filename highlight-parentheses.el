@@ -30,10 +30,18 @@
 ;;; Commentary:
 ;;
 ;; Add the following to your .emacs file:
-;; (require 'highlight-parentheses)
+;;
+;;     (require 'highlight-parentheses)
 ;;
 ;; Enable the mode using `M-x highlight-parentheses-mode' or by adding it to a
-;; hook such as `prog-mode-hook'.
+;; hook such as `prog-mode-hook'.  You can also enable
+;; `global-highlight-parentheses-mode' which enables it in all buffers
+;; automatically.  Additionally, you can
+;;
+;;     (add-hook 'minibuffer-setup-hook #'highlight-parentheses-minibuffer-setup)
+;;
+;; in order to enable it also in the minibuffer, e.g., when input is read from
+;; the minibuffer.
 ;;
 ;; The look of the highlighted parens can be customized using these options:
 ;;
@@ -195,40 +203,13 @@ overlays in it instead."
                      #'highlight-parentheses--highlight)))
 
 
-;;; Mode Functions
-;;;###autoload
-(define-minor-mode highlight-parentheses-mode
-  "Minor mode to highlight the surrounding parentheses."
-  :lighter " hl-p"
-  (highlight-parentheses--delete-overlays)
-  (kill-local-variable 'highlight-parentheses--overlays)
-  (kill-local-variable 'highlight-parentheses--last-point)
-  (remove-hook 'post-command-hook
-               #'highlight-parentheses--initiate-highlight t)
-  (remove-hook 'before-revert-hook
-               #'highlight-parentheses--delete-overlays)
-  (remove-hook 'change-major-mode-hook
-               #'highlight-parentheses--delete-overlays)
-  (when (and highlight-parentheses-mode
-             ;; Don't enable in *Messages* buffer.
-             ;; https://github.com/tsdh/highlight-parentheses.el/issues/14
-             (not (eq major-mode 'messages-buffer-mode))
-             (not (string= (buffer-name) "*Messages*")))
-    (highlight-parentheses--create-overlays)
-    (add-hook 'post-command-hook
-              #'highlight-parentheses--initiate-highlight nil t)
-    (add-hook 'before-revert-hook
-              #'highlight-parentheses--delete-overlays)
-    (add-hook 'change-major-mode-hook
-              #'highlight-parentheses--delete-overlays)))
-
-;;;###autoload
-(define-globalized-minor-mode global-highlight-parentheses-mode
-  highlight-parentheses-mode
-  (lambda () (highlight-parentheses-mode 1)))
-
-
 ;;; Overlays
+
+(defvar highlight-parentheses--face-property
+  'font-lock-face
+  "Face property to be used for fontification.
+This is `font-lock-face' in all normal buffers and `face' for
+minibuffer.")
 
 (defun highlight-parentheses--create-overlays ()
   "Initialize `highlight-parentheses--overlays' buffer-locally."
@@ -266,9 +247,12 @@ overlays in it instead."
         (push (make-overlay 0 0 nil t) highlight-parentheses--overlays)
         ;; Add a 'highlight-parentheses property just that we can easily
         ;; identify "our" overlay with `C-u C-x =' and friends.
-        (overlay-put (car highlight-parentheses--overlays) 'highlight-parentheses t)
-        (overlay-put (car highlight-parentheses--overlays) 'font-lock-face attributes)))
-    (setq highlight-parentheses--overlays (nreverse highlight-parentheses--overlays))))
+        (overlay-put (car highlight-parentheses--overlays)
+                     'highlight-parentheses t)
+        (overlay-put (car highlight-parentheses--overlays)
+                     highlight-parentheses--face-property attributes)))
+    (setq highlight-parentheses--overlays
+          (nreverse highlight-parentheses--overlays))))
 
 (defun highlight-parentheses--color-update ()
   "Force-update highlighted parentheses in all buffers."
@@ -280,6 +264,48 @@ overlays in it instead."
         (highlight-parentheses--create-overlays)
         (let ((highlight-parentheses--last-point -1)) ;; force update
           (highlight-parentheses--highlight))))))
+
+
+;;; Mode Functions
+;;;###autoload
+(define-minor-mode highlight-parentheses-mode
+  "Minor mode to highlight the surrounding parentheses."
+  :lighter " hl-p"
+  (highlight-parentheses--delete-overlays)
+  (kill-local-variable 'highlight-parentheses--overlays)
+  (kill-local-variable 'highlight-parentheses--last-point)
+  (remove-hook 'post-command-hook
+               #'highlight-parentheses--initiate-highlight t)
+  (remove-hook 'before-revert-hook
+               #'highlight-parentheses--delete-overlays)
+  (remove-hook 'change-major-mode-hook
+               #'highlight-parentheses--delete-overlays)
+  (when (and highlight-parentheses-mode
+             ;; Don't enable in *Messages* buffer.
+             ;; https://github.com/tsdh/highlight-parentheses.el/issues/14
+             (not (eq major-mode 'messages-buffer-mode))
+             (not (string= (buffer-name) "*Messages*")))
+    (highlight-parentheses--create-overlays)
+    (add-hook 'post-command-hook
+              #'highlight-parentheses--initiate-highlight nil t)
+    (add-hook 'before-revert-hook
+              #'highlight-parentheses--delete-overlays)
+    (add-hook 'change-major-mode-hook
+              #'highlight-parentheses--delete-overlays)))
+
+(defun highlight-parentheses-minibuffer-setup ()
+  "Setup `highlight-parentheses-mode' in the minibuffer.
+This function is meant to be added to `minibuffer-setup-hook' in
+order to highlight parentheses also in the minibuffer, e.g., in
+the input given at the `eval-expression' prompt (`M-:')."
+  (setq-local highlight-parentheses--face-property 'face)
+  (font-lock-mode)
+  (highlight-parentheses-mode))
+
+;;;###autoload
+(define-globalized-minor-mode global-highlight-parentheses-mode
+  highlight-parentheses-mode
+  (lambda () (highlight-parentheses-mode 1)))
 
 (provide 'highlight-parentheses)
 

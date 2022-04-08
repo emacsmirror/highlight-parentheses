@@ -2,11 +2,11 @@
 ;;
 ;; Copyright (C) 2007, 2009, 2013 Nikolaj Schumacher
 ;; Copyright (C) 2018 Tim Perkins
-;; Copyright (C) 2018-2021 Tassilo Horn
+;; Copyright (C) 2018-2022 Tassilo Horn
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
 ;; Maintainer: Tassilo Horn <tsdh@gnu.org>
-;; Version: 2.1.0
+;; Version: 2.1.1
 ;; Keywords: faces, matching
 ;; URL: https://sr.ht/~tsdh/highlight-parentheses.el/
 ;; Package-Requires: ((emacs "24.3"))
@@ -195,7 +195,9 @@ overlays in it instead."
 (define-obsolete-function-alias 'hl-paren-initiate-highlight
   'highlight-parentheses--initiate-highlight "2.0.0")
 (defun highlight-parentheses--initiate-highlight ()
-  "Move the `highlight-parentheses--overlays' after a `highlight-parentheses-delay' secs."
+  "Move the overlays after a short delay.
+The overlays are specified by `highlight-parentheses--overlays',
+the delay by `highlight-parentheses-delay' seconds."
   (when highlight-parentheses--timer
     (cancel-timer highlight-parentheses--timer))
   (setq highlight-parentheses--timer

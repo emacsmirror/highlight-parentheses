@@ -177,7 +177,7 @@ overlays in it instead."
   (mapc #'delete-overlay overlays))
 
 (defun highlight-parentheses--highlight-needed-p ()
-  "Return non-nil when if re-highlighting is needed."
+  "Return non-nil if re-highlighting is needed."
   (let ((point (point))
         (last-point highlight-parentheses--last-point))
     (or
@@ -186,8 +186,8 @@ overlays in it instead."
      ;; Check if point has moved and during the move, it crossed some paren.
      (and (/= (point) last-point)
           (catch 'highlight-needed
-            (let ((start (if (< point last-point) point last-point))
-                  (end (if (< point last-point) last-point point)))
+            (let ((start (min point last-point))
+                  (end   (max point last-point)))
               ;; If the move was large, checking if we crossed some paren
               ;; becomes too expensive, so give up.
               (when (> (- end start) 5000)

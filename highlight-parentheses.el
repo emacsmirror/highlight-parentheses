@@ -2,15 +2,15 @@
 ;;
 ;; Copyright (C) 2007, 2009, 2013 Nikolaj Schumacher
 ;; Copyright (C) 2018 Tim Perkins
-;; Copyright (C) 2018-2022 Tassilo Horn
+;; Copyright (C) 2018-2022, 2024 Tassilo Horn
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
 ;; Maintainer: Tassilo Horn <tsdh@gnu.org>
-;; Version: 2.1.1
+;; Version: 2.2.0
 ;; Keywords: faces, matching
 ;; URL: https://sr.ht/~tsdh/highlight-parentheses.el/
 ;; Package-Requires: ((emacs "24.3"))
-;; Compatibility: GNU Emacs 24.3, 25.x, 26.x, 27.x
+;; Compatibility: GNU Emacs 24.3, 25.x, 26.x, 27.x, 28.x, 29.x
 ;;
 ;; This file is NOT part of GNU Emacs.
 ;;

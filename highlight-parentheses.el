@@ -233,9 +233,11 @@ overlays in it instead."
                   (throw 'no-change t))
                 (setq first-iteration nil)))))
         (highlight-parentheses--delete-overlays overlays))
-      (setq highlight-parentheses--last-pair
-            (cons (overlay-start (car highlight-parentheses--overlays))
-                  (overlay-start (cadr highlight-parentheses--overlays)))))))
+      (let ((o1 (car highlight-parentheses--overlays))
+            (o2 (cadr highlight-parentheses--overlays)))
+        (setq highlight-parentheses--last-pair
+              (cons (and o1 (overlay-start o1))
+                    (and o2 (overlay-start o2))))))))
 
 (define-obsolete-function-alias 'hl-paren-initiate-highlight
   'highlight-parentheses--initiate-highlight "2.0.0")
